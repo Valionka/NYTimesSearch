@@ -89,6 +89,7 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
                     Log.d("DEBUG", articleJsonResults.toString());
+                    adapter.clear();
                     adapter.addAll(Article.fromJsonArray(articleJsonResults));
                 } catch (JSONException e) {
                     e.printStackTrace();
