@@ -6,6 +6,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,11 +37,19 @@ public class SearchActivity extends AppCompatActivity {
   //  Button btnSearch;
     Toolbar toolbar;
 
+    private final int REQUEST_CODE = 20;
+
     List<Article> articles;
     ArticleArrayAdapter adapter;
 
     final String API_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
     final String API_KEY = "faa88df7883d422989311a3f585fe6fc";
+
+    private static ArrayList<String> fq;
+    private static String sort;
+    private static String date;
+
+    private static String currentQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,27 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Processes result from Edit activity
+     *
+     * @param requestCode - the request code to edit activitys
+     * @param resultCode - result code set by edit activity
+     * @param data - data passed from edit activity
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            fq = data.getExtras().getStringArrayList("fq");
+            sort = data.getExtras().getString("sort");
+            date = "";
+        }
+
+        if(currentQuery != null) {
+            callAPI(currentQuery);
+        }
+    }
+
+
     // Menu icons are inflated just as they were with actionbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -92,6 +122,9 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
+                currentQuery = query;
+
                 // perform query here
                 callAPI(query);
 
@@ -104,12 +137,33 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText.length() > 2) {
+              /*  if(newText.length() > 2) {
                     callAPI(newText);
                 }
+                */
                 return false;
             }
         });
+
+
+        // on filter icon click in the menu
+        MenuItem miFilter = menu.findItem(R.id.miFilter);
+        miFilter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                // create an intent to display the article
+                Intent i = new Intent(getApplicationContext(), FilterActivity.class);
+
+                i.putExtra("fq", fq);
+                i.putExtra("sort", sort);
+                i.putExtra("date", date);
+                // launch the activity
+                startActivityForResult(i, REQUEST_CODE);
+
+                return true;
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
 
     }
@@ -123,6 +177,18 @@ public class SearchActivity extends AppCompatActivity {
         params.put("page", 0);
         params.put("q", query);
 
+        if(sort != null){
+            params.put("sort", sort.toLowerCase());
+        }
+
+        if(fq != null && fq.size() > 0)  {
+            String fqFilter = "news_desk:(\"" + TextUtils.join("\" \"", fq) + "\")";
+            params.put("fq", fqFilter);
+        }
+        if(date != null) {
+            params.put("date", date);
+        }
+
         client.get(API_URL, params, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -133,6 +199,7 @@ public class SearchActivity extends AppCompatActivity {
                     Log.d("DEBUG", articleJsonResults.toString());
                     adapter.clear();
                     adapter.addAll(Article.fromJsonArray(articleJsonResults));
+                    adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

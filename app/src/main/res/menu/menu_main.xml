@@ -12,6 +12,6 @@
         android:id="@+id/miFilter"
         android:icon="@drawable/filter"
         app:showAsAction="ifRoom"
-        android:title="Compose">
+        android:title="Filter">
     </item>
 </menu>
