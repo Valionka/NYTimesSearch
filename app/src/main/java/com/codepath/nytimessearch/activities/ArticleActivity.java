@@ -6,6 +6,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.codepath.nytimessearch.R;
+import com.codepath.nytimessearch.models.Article;
 
 public class ArticleActivity extends AppCompatActivity {
 
@@ -14,7 +15,9 @@ public class ArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
-        String url = getIntent().getStringExtra("url");
+        //String url = getIntent().getStringExtra("url");
+        Article article = (Article) getIntent().getParcelableExtra("article");
+        String url = article.getWebURL();
 
         WebView webView = (WebView) findViewById(R.id.wvArticle);
 
