@@ -10,78 +10,112 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.codepath.nytimessearch.activities.FilterActivity">
 
-
-
     <LinearLayout
-        android:id="@+id/checkboxes"
-        android:orientation="vertical"
+        android:id="@+id/dateFields"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp">
 
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/bgnDate"
+            android:id="@+id/tvBgnDate" >
+        </TextView>
         <EditText
-            android:layout_width="124dp"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="Enter Date"
+            android:layout_marginLeft="40dp"
             android:ems="10"
             android:id="@+id/date"
             android:onClick="showDatePickerDialog"/>
 
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/spinner"
+        android:orientation="horizontal"
+        android:layout_below="@+id/dateFields"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/sortOrder"
+            android:id="@+id/sortOrder" >
+        </TextView>
+
         <Spinner
+            android:layout_marginLeft="40dp"
             android:id="@+id/spSorter"
             android:layout_width="wrap_content"
             android:entries="@array/sorting_array"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:text="@string/ndvs"
+        android:id="@+id/tvDeskValue"
+        android:layout_below="@id/spinner"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="25dp"
+        android:paddingTop="@dimen/activity_vertical_margin">
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/checkbox"
+        android:orientation="vertical"
+        android:layout_below="@+id/spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_toRightOf="@id/tvDeskValue"
+        android:paddingTop="@dimen/activity_vertical_margin">
 
         <CheckBox android:id="@+id/checkbox_arts"
             android:layout_width="105dp"
             android:layout_height="wrap_content"
-            android:text="Arts" />
+            android:text="@string/arts" />
         <CheckBox android:id="@+id/checkbox_fashion"
             android:layout_width="105dp"
             android:layout_height="wrap_content"
-            android:text="Fashion &amp; Style" />
+            android:text="@string/fashion" />
         <CheckBox android:id="@+id/checkbox_sports"
             android:layout_width="105dp"
             android:layout_height="wrap_content"
-            android:text="Sports" />
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:text="@string/Cancel"
-                android:layout_width="148dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/button2"
-                android:onClick="onCancel" />
-
-            <Button
-                android:text="@string/Save"
-                android:layout_width="148dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/button"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/button2"
-                android:layout_toEndOf="@+id/button2"
-                android:layout_marginLeft="18dp"
-                android:layout_marginStart="18dp"
-                android:onClick="onSaveItem" />
-
-        </RelativeLayout>
-
+            android:text="@string/sports" />
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:orientation="horizontal"
+        android:layout_below="@+id/checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:paddingTop="@dimen/activity_vertical_margin">
 
+        <Button
+            android:text="@string/Cancel"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/button2"
+            android:onClick="onCancel" />
+
+        <Button
+            android:text="@string/Save"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/button"
+            android:layout_marginLeft="10dp"
+            android:onClick="onSaveItem" />
+
+    </LinearLayout>
 
 
 </RelativeLayout>
