@@ -16,6 +16,7 @@ import android.widget.GridView;
 
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticleArrayAdapter;
+import com.codepath.nytimessearch.listeners.EndlessScrollListener;
 import com.codepath.nytimessearch.models.Article;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -68,6 +69,14 @@ public class SearchActivity extends AppCompatActivity {
 
         //etQuery = (EditText) findViewById(R.id.etQuery);
         gvResults = (GridView) findViewById(R.id.gvResults);
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                callAPI(page, currentQuery);
+                return true;
+            }
+        });
+
         //btnSearch = (Button) findViewById(R.id.btnSearch);
         articles = new ArrayList<>();
         adapter = new ArticleArrayAdapter(this, articles);
@@ -105,7 +114,7 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         if(currentQuery != null) {
-            callAPI(currentQuery);
+            callAPI(0, currentQuery);
         }
     }
 
@@ -126,7 +135,7 @@ public class SearchActivity extends AppCompatActivity {
                 currentQuery = query;
 
                 // perform query here
-                callAPI(query);
+                callAPI(0, query);
 
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
@@ -168,13 +177,13 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-    public void callAPI (String query) {
+    public void callAPI (final int page, String query) {
         //Toast.makeText(this, "Search for " + query, Toast.LENGTH_LONG).show();
         AsyncHttpClient client = new AsyncHttpClient();
 
         RequestParams params = new RequestParams();
         params.put("api_key", API_KEY);
-        params.put("page", 0);
+        params.put("page", page);
         params.put("q", query);
 
         if(sort != null){
@@ -197,7 +206,9 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
                     Log.d("DEBUG", articleJsonResults.toString());
-                    adapter.clear();
+                    if(page == 0) {
+                        adapter.clear();
+                    }
                     adapter.addAll(Article.fromJsonArray(articleJsonResults));
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
