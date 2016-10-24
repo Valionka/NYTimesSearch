@@ -101,7 +101,7 @@ public class SearchActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
             fq = data.getExtras().getStringArrayList("fq");
             sort = data.getExtras().getString("sort");
-            date = "";
+            date = data.getExtras().getString("date");
         }
 
         if(currentQuery != null) {
@@ -186,7 +186,7 @@ public class SearchActivity extends AppCompatActivity {
             params.put("fq", fqFilter);
         }
         if(date != null) {
-            params.put("date", date);
+            params.put("begin_date", date);
         }
 
         client.get(API_URL, params, new JsonHttpResponseHandler(){

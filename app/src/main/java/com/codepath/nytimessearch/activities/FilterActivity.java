@@ -1,5 +1,6 @@
 package com.codepath.nytimessearch.activities;
 
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,33 +8,52 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.codepath.nytimessearch.R;
+import com.codepath.nytimessearch.frgament.DatePickerFragment;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
-public class FilterActivity extends AppCompatActivity  implements OnItemSelectedListener {
+public class FilterActivity extends AppCompatActivity  implements OnItemSelectedListener, OnDateSetListener {
 
-    String beginDate;
     String sortOrder = null;
     ArrayList<String> desk;
-
 
     CheckBox checkArts;
     CheckBox checkFashion;
     CheckBox checkSports;
+
+    Date date;
+    static Calendar c;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
 
-
         ArrayList<String> fq = getIntent().getStringArrayListExtra("fq");
         setupCheckboxes(fq);
 
-        String date = getIntent().getStringExtra("date");
+        if(getIntent().getStringExtra("date") != null) {
+           // String passedDate = getIntent().getStringExtra("date");
+            EditText dateView = (EditText) findViewById(R.id.date);
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+            try {
+                Date passedDate = df.parse(getIntent().getStringExtra("date"));
+                SimpleDateFormat df1 = new SimpleDateFormat("MM/dd/yy");
+                dateView.setText(df1.format(passedDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
 
 
         String sort = getIntent().getStringExtra("sort");
@@ -42,8 +62,6 @@ public class FilterActivity extends AppCompatActivity  implements OnItemSelected
         if(sort != null) {
             spinner.setSelection(getIndex(spinner, sort));
         }
-
-
 
 
       /*  CompoundButton.OnCheckedChangeListener checkListener = new CompoundButton.OnCheckedChangeListener() {
@@ -80,6 +98,33 @@ public class FilterActivity extends AppCompatActivity  implements OnItemSelected
         }; */
 
 
+    }
+
+    // attach to an onclick handler to show the date picker
+    public void showDatePickerDialog(View v) {
+        DatePickerFragment newFragment = new DatePickerFragment();
+        if(c != null){
+            newFragment.setCalender(c);
+        }
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    // handle the date selected
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+        c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, monthOfYear);
+        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+        date = c.getTime();
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+
+        EditText dateView = (EditText)findViewById(R.id.date);
+
+        dateView.setText(df.format(date));
+        //dateView.setText(date.getMonth() + "/" + date.getDay() + "/" + date.getYear().substring(1));
     }
 
     // get sinner position for mystring
@@ -125,6 +170,10 @@ public class FilterActivity extends AppCompatActivity  implements OnItemSelected
 
         data.putStringArrayListExtra("fq", desk);
         data.putExtra("sort", sortOrder);
+        if(date != null) {
+            DateFormat df = new SimpleDateFormat("yyyyMMdd");
+            data.putExtra("date", df.format(date));
+        }
         setResult(RESULT_OK, data);
         finish();
     }
