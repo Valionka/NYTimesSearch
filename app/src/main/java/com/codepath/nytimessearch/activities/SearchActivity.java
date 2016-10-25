@@ -2,6 +2,7 @@ package com.codepath.nytimessearch.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -18,6 +19,7 @@ import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticleArrayAdapter;
 import com.codepath.nytimessearch.listeners.EndlessScrollListener;
 import com.codepath.nytimessearch.models.Article;
+import com.codepath.nytimessearch.utils.ErrorUtil;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -179,6 +181,22 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void callAPI (final int page, String query) {
+
+        if(!ErrorUtil.isOnline()){
+            View parentLayout = findViewById(R.id.gvResults);
+            Snackbar.make(parentLayout, R.string.neterr, Snackbar.LENGTH_INDEFINITE)
+                    .setAction("CLOSE", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    })
+                    .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
+                    .show();
+            return;
+
+        }
+
         //Toast.makeText(this, "Search for " + query, Toast.LENGTH_LONG).show();
         AsyncHttpClient client = new AsyncHttpClient();
 
@@ -199,7 +217,9 @@ public class SearchActivity extends AppCompatActivity {
             params.put("begin_date", date);
         }
 
+
         client.get(API_URL, params, new JsonHttpResponseHandler(){
+
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("DEBUG", response.toString());
@@ -216,7 +236,43 @@ public class SearchActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+
+                View parentLayout = findViewById(R.id.gvResults);
+                Snackbar.make(parentLayout, R.string.neterr, Snackbar.LENGTH_INDEFINITE)
+                        .setAction("CLOSE", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        })
+                        .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
+                        .show();
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
         });
+
+      /*  client.get(API_URL, params, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", response.toString());
+                JSONArray articleJsonResults = null;
+                try {
+                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                    Log.d("DEBUG", articleJsonResults.toString());
+                    if(page == 0) {
+                        adapter.clear();
+                    }
+                    adapter.addAll(Article.fromJsonArray(articleJsonResults));
+                    adapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }); */
     }
 
    /* public void onArticleSearch(View view) {
