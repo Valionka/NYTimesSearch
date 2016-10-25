@@ -50,7 +50,7 @@ Here's a walkthrough of implemented user stories:
 
 <img src='http://i.imgur.com/vzoGJtF.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
-Network Error:
+Network Error:<br>
 <img src='http://i.imgur.com/zerznRz.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 
